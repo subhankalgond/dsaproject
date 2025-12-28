@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doubly Linked Lists (DLL) Guide</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        header {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 30px;
+            border-radius: 0 0 20px 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            animation: fadeInDown 1s ease;
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        nav {
+            margin: 20px 0;
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 1s ease 0.5s both;
+        }
+        nav button {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        nav button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #218838, #17a2b8);
+        }
+        section {
+            margin: 40px auto;
+            max-width: 900px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+            backdrop-filter: blur(10px);
+        }
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        h2 {
+            color: #007bff;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+            animation: slideInLeft 0.8s ease;
+        }
+        @keyframes slideInLeft {
+            from { transform: translateX(-50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #d73a49;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            border-left: 5px solid #007bff;
+            animation: fadeInUp 1s ease;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        ul {
+            list-style-type: disc;
+            margin-left: 20px;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+        li {
+            margin-bottom: 10px;
+            animation: slideInRight 0.6s ease both;
+        }
+        li:nth-child(1) { animation-delay: 0.1s; }
+        li:nth-child(2) { animation-delay: 0.2s; }
+        li:nth-child(3) { animation-delay: 0.3s; }
+        li:nth-child(4) { animation-delay: 0.4s; }
+        li:nth-child(5) { animation-delay: 0.5s; }
+        li:nth-child(6) { animation-delay: 0.6s; }
+        li:nth-child(7) { animation-delay: 0.7s; }
+        li:nth-child(8) { animation-delay: 0.8s; }
+        @keyframes slideInRight {
+            from { transform: translateX(50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Doubly Linked Lists (DLL): Understanding Bidirectional Navigation and Operations</h1>
+        <p>A comprehensive guide to Doubly Linked Lists, including terms, advantages, disadvantages, and examples.</p>
+    </header>
+
+    <nav>
+        <button onclick="scrollToSection('intro')">Introduction</button>
+        <button onclick="scrollToSection('terms')">Key Terms</button>
+        <button onclick="scrollToSection('operations')">Operations</button>
+        <button onclick="scrollToSection('advantages')">Advantages</button>
+        <button onclick="scrollToSection('disadvantages')">Disadvantages</button>
+        <button onclick="scrollToSection('examples')">Examples</button>
+    </nav>
+
+    <section id="intro">
+        <h2>Introduction</h2>
+        <p>A Doubly Linked List (DLL) is a linear data structure where each node contains data and two pointers: one pointing to the next node and one to the previous node. This allows bidirectional navigation, unlike singly linked lists which only allow forward traversal.</p>
+        <p>DLLs are useful for applications requiring frequent insertions and deletions at both ends, such as implementing undo/redo features or browser history.</p>
+    </section>
+
+    <section id="terms">
+        <h2>Key Terms</h2>
+        <ul>
+            <li><strong>Node:</strong> The basic building block of a DLL. Each node has three parts: data, a pointer to the next node (<code>next</code>), and a pointer to the previous node (<code>prev</code>).</li>
+            <li><strong>Head:</strong> The first node in the list. Its <code>prev</code> pointer is usually <code>null</code>.</li>
+            <li><strong>Tail:</strong> The last node in the list. Its <code>next</code> pointer is usually <code>null</code>.</li>
+            <li><strong>Pointers:</strong> <code>next</code> points to the subsequent node; <code>prev</code> points to the preceding node.</li>
+            <li><strong>Traversal:</strong> Visiting each node in the list, either forward (using <code>next</code>) or backward (using <code>prev</code>).</li>
+            <li><strong>Insertion:</strong> Adding a new node at a specific position (e.g., beginning, end, or middle).</li>
+            <li><strong>Deletion:</strong> Removing a node from the list while maintaining the links.</li>
+            <li><strong>Search:</strong> Finding a node with specific data by traversing the list.</li>
+        </ul>
+    </section>
+
+    <section id="operations">
+        <h2>Operations</h2>
+        <p>DLL supports efficient operations due to bidirectional links:</p>
+        <ul>
+            <li><strong>Insertion at Beginning:</strong> Create a new node, set its <code>next</code> to head, head's <code>prev</code> to new node, and update head.</li>
+            <li><strong>Insertion at End:</strong> Create a new node, set tail's <code>next</code> to new node, new node's <code>prev</code> to tail, and update tail.</li>
+            <li><strong>Deletion:</strong> Adjust <code>prev</code> and <code>next</code> pointers of adjacent nodes and remove the target node.</li>
+            <li><strong>Traversal:</strong> Start from head and follow <code>next</code> for forward; from tail and follow <code>prev</code> for backward.</li>
+        </ul>
+    </section>
+
+    <section id="advantages">
+        <h2>Advantages</h2>
+        <ul>
+            <li><strong>Bidirectional Traversal:</strong> Can traverse in both directions efficiently, unlike singly linked lists.</li>
+            <li><strong>Efficient Insertions/Deletions:</strong> O(1) time for operations at known positions (e.g., head or tail), as no shifting is needed.</li>
+            <li><strong>Dynamic Size:</strong> Can grow or shrink dynamically without wasting space.</li>
+            <li><strong>Undo/Redo Support:</strong> Ideal for applications like text editors where backward navigation is needed.</li>
+        </ul>
+    </section>
+
+    <section id="disadvantages">
+        <h2>Disadvantages</h2>
+        <ul>
+            <li><strong>Extra Memory:</strong> Each node requires an extra pointer (<code>prev</code>), increasing memory usage compared to singly linked lists.</li>
+            <li><strong>Complexity:</strong> More complex to implement and maintain due to two pointers per node.</li>
+            <li><strong>Pointer Management:</strong> Risk of errors in updating pointers, potentially leading to broken links or memory leaks.</li>
+            <li><strong>No Random Access:</strong> Cannot directly access elements by index; must traverse sequentially.</li>
+        </ul>
+    </section>
+
+    <section id="examples">
+        <h2>Examples</h2>
+        <p>Below are Python examples for key operations in a DLL. Assume a Node class with <code>data</code>, <code>next</code>, and <code>prev</code>.</p>
+
+        <h3>Node Class</h3>
+        <pre><code>class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+        self.prev = None</code></pre>
+
+        <h3>Insertion at Beginning</h3>
+        <pre><code>def insert_at_beginning(head, data):
+    new_node = Node(data)
+    if head:
+        head.prev = new_node
+    new_node.next = head
+    return new_node  # New head</code></pre>
+
+        <h3>Insertion at End</h3>
+        <pre><code>def insert_at_end(tail, data):
+    new_node = Node(data)
+    if tail:
+        tail.next = new_node
+    new_node.prev = tail
+    return new_node  # New tail</code></pre>
+
+        <h3>Deletion of a Node</h3>
+        <pre><code>def delete_node(node):
+    if node.prev:
+        node.prev.next = node.next
+    if node.next:
+        node.next.prev = node.prev
+    # Node is now isolated</code></pre>
+
+        <h3>Forward Traversal</h3>
+        <pre><code>def traverse_forward(head):
+    current = head
+    while current:
+        print(current.data)
+        current = current.next</code></pre>
+
+        <h3>Backward Traversal</h3>
+        <pre><code>def traverse_backward(tail):
+    current = tail
+    while current:
+        print(current.data)
+        current = current.prev</code></pre>
+    </section>
+
+    <script>
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            section.classList.add('visible');
+            section.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Trigger visibility on scroll for animations
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section');
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top < window.innerHeight - 100) {
+                    section.classList.add('visible');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
