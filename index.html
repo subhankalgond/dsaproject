@@ -48,6 +48,44 @@
             position: relative;
             z-index: 1;
         }
+        /* Team banner */
+        .team-banner {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            margin-bottom: 12px;
+            background: linear-gradient(90deg, rgba(124,58,237,0.06), rgba(6,182,212,0.04));
+            border-radius: 999px;
+            font-weight: 700;
+            color: #071033;
+            letter-spacing: 0.6px;
+            box-shadow: 0 8px 28px rgba(12,24,56,0.06);
+            justify-content: center;
+        }
+        .team-banner .team-label {
+            font-size: 12px;
+            color: var(--primary);
+            text-transform: uppercase;
+            opacity: 0.95;
+        }
+        .team-banner .team-name {
+            font-size: 14px;
+            color: #071033;
+            text-transform: uppercase;
+            display: inline-block;
+            transition: transform 220ms cubic-bezier(.2,.9,.3,1), opacity 220ms ease;
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .team-banner .team-name.animate-in {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .team-banner .team-name.animate-out {
+            transform: translateY(-8px);
+            opacity: 0;
+        }
         header {
             text-align: center;
             padding: 34px 26px;
@@ -177,9 +215,12 @@
 </head>
 <body>
     <div class="site">
+        <div class="team-banner" aria-live="polite" aria-atomic="true">
+            <span class="team-label">Our Team:</span>
+            <span class="team-name">SUBHAN</span>
+        </div>
     <header>
         <h1>Doubly Linked Lists (DLL): Understanding Bidirectional Navigation and Operations</h1>
-        <p>A comprehensive guide to Doubly Linked Lists, including terms, advantages, disadvantages, and examples.</p>
     </header>
 
     <nav>
@@ -340,6 +381,32 @@
                 }
             });
         });
+
+        // Team banner name rotation (SUBHAN, SUHAIB, NUH, BIDI, YALAA)
+        (function() {
+            const names = ['SUBHAN','SUHAIB','NUH','BIDI','YALAA'];
+            const el = document.querySelector('.team-banner .team-name');
+            if (!el) return;
+            let idx = 0;
+            const delay = 2200; // ms between switches
+
+            function showNext() {
+                // animate out
+                el.classList.remove('animate-in');
+                el.classList.add('animate-out');
+                setTimeout(() => {
+                    idx = (idx + 1) % names.length;
+                    el.textContent = names[idx];
+                    // animate in
+                    el.classList.remove('animate-out');
+                    el.classList.add('animate-in');
+                }, 260);
+            }
+
+            // seed initial animation
+            el.classList.add('animate-in');
+            setInterval(showNext, delay);
+        })();
     </script>
 </body>
 </html>
