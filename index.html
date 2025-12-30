@@ -4,139 +4,193 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doubly Linked Lists (DLL) Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg: linear-gradient(135deg, #eef2ff 0%, #f0fdfa 100%);
+            --card: linear-gradient(180deg, #ffffff, #fbfdff);
+            --muted: #475569;
+            --primary: #7c3aed;
+            --secondary: #06b6d4;
+            --accent: #fb7185;
+            --max-width: 920px;
+        }
+        html, body {
+            height: 100%;
+            background-attachment: fixed;
+        }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
+            font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.7;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
+            background: var(--bg);
+            color: #071033;
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
             min-height: 100vh;
+        }
+        /* decorative soft radial accents */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(circle at 10% 10%, rgba(124,58,237,0.08), transparent 10%),
+                              radial-gradient(circle at 90% 80%, rgba(6,182,212,0.06), transparent 8%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .site {
+            max-width: var(--max-width);
+            margin: 48px auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
         }
         header {
             text-align: center;
-            background: rgba(255, 255, 255, 0.1);
+            padding: 34px 26px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 14px;
             color: white;
-            padding: 30px;
-            border-radius: 0 0 20px 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            animation: fadeInDown 1s ease;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 30px rgba(37,99,235,0.08);
         }
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-50px); }
-            to { opacity: 1; transform: translateY(0); }
+        header h1 {
+            margin: 0 0 8px 0;
+            font-weight: 800;
+            font-size: 22px;
+            letter-spacing: -0.2px;
+            color: #ffffff;
+        }
+        header p {
+            margin: 0;
+            color: rgba(255,255,255,0.95);
+            font-weight: 500;
         }
         nav {
-            margin: 20px 0;
-            text-align: center;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            animation: fadeInUp 1s ease 0.5s both;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 18px 0;
+        }
+        .tabbar {
+            background: rgba(255,255,255,0.85);
+            padding: 6px;
+            border-radius: 999px;
+            display: inline-flex;
+            gap: 6px;
+            border: 1px solid rgba(15,23,42,0.06);
+            box-shadow: 0 4px 20px rgba(5,10,25,0.04);
+            align-items: center;
         }
         nav button {
-            background: linear-gradient(45deg, #28a745, #20c997);
-            color: white;
+            background: transparent;
+            color: #071033;
             border: none;
-            padding: 12px 24px;
-            margin: 5px;
-            border-radius: 25px;
+            padding: 8px 14px;
+            margin: 0;
+            border-radius: 999px;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 180ms ease, transform 150ms ease, color 180ms ease, box-shadow 180ms ease;
         }
         nav button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-            background: linear-gradient(45deg, #218838, #17a2b8);
+            background: linear-gradient(90deg, rgba(124,58,237,0.06), rgba(6,182,212,0.04));
+            transform: translateY(-1px);
+        }
+        nav button:focus {
+            outline: 3px solid rgba(124,58,237,0.12);
+            outline-offset: 3px;
+            border-radius: 10px;
+        }
+        nav button[aria-pressed="true"] {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 8px 20px rgba(124,58,237,0.12);
+            transform: translateY(-2px);
         }
         section {
-            margin: 40px auto;
-            max-width: 900px;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s ease;
-            backdrop-filter: blur(10px);
+            margin: 18px 0;
+            padding: 24px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(250,252,255,0.98));
+            border-radius: 12px;
+            border: 1px solid rgba(124,58,237,0.06);
+            box-shadow: 0 10px 30px rgba(12,24,56,0.06);
         }
-        section.visible {
-            opacity: 1;
-            transform: translateY(0);
+        section h2 {
+            color: var(--primary);
+            margin: 0 0 12px 0;
+            font-size: 16px;
+            font-weight: 700;
+            border-bottom: 0;
+            padding-bottom: 0;
         }
-        h2 {
-            color: #007bff;
-            border-bottom: 3px solid #007bff;
-            padding-bottom: 10px;
-            animation: slideInLeft 0.8s ease;
+        section p, section li {
+            color: #071033;
+            font-size: 15px;
         }
-        @keyframes slideInLeft {
-            from { transform: translateX(-50px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        code {
-            background-color: #f8f9fa;
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-            color: #d73a49;
-        }
-        pre {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            overflow-x: auto;
-            border-left: 5px solid #007bff;
-            animation: fadeInUp 1s ease;
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        h3 {
+            margin-top: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #071033;
         }
         ul {
-            list-style-type: disc;
-            margin-left: 20px;
-            animation: fadeInUp 1s ease 0.2s both;
+            padding-left: 20px;
+            margin: 8px 0;
         }
-        li {
-            margin-bottom: 10px;
-            animation: slideInRight 0.6s ease both;
+        code {
+            background-color: rgba(124,58,237,0.06);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace;
+            color: #7c3aed;
+            font-size: 13px;
         }
-        li:nth-child(1) { animation-delay: 0.1s; }
-        li:nth-child(2) { animation-delay: 0.2s; }
-        li:nth-child(3) { animation-delay: 0.3s; }
-        li:nth-child(4) { animation-delay: 0.4s; }
-        li:nth-child(5) { animation-delay: 0.5s; }
-        li:nth-child(6) { animation-delay: 0.6s; }
-        li:nth-child(7) { animation-delay: 0.7s; }
-        li:nth-child(8) { animation-delay: 0.8s; }
-        @keyframes slideInRight {
-            from { transform: translateX(50px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        pre {
+            background: linear-gradient(180deg,#0b1220 0%, #0f172a 100%);
+            color: #e6f0ff;
+            padding: 14px;
+            border-radius: 10px;
+            overflow-x: auto;
+            border-left: 6px solid rgba(6,182,212,0.9);
+            margin: 12px 0;
+            font-size: 13px;
+            line-height: 1.6;
+            box-shadow: 0 10px 30px rgba(2,6,23,0.45);
         }
+        @media (max-width: 640px) {
+            header h1 { font-size: 18px; }
+            .site { margin: 20px 16px; }
+            nav { padding: 0 6px; }
+            nav button { padding: 8px 10px; font-size: 13px; }
+            section { padding: 16px; }
+            pre { font-size: 12px; }
+        }
+        /* Subtle reveal for accessibility-friendly motion */
+        section { transform: none; opacity: 1; transition: none; }
     </style>
+
 </head>
 <body>
+    <div class="site">
     <header>
         <h1>Doubly Linked Lists (DLL): Understanding Bidirectional Navigation and Operations</h1>
         <p>A comprehensive guide to Doubly Linked Lists, including terms, advantages, disadvantages, and examples.</p>
     </header>
 
     <nav>
-        <button onclick="scrollToSection('intro')">Introduction</button>
-        <button onclick="scrollToSection('terms')">Key Terms</button>
-        <button onclick="scrollToSection('operations')">Operations</button>
-        <button onclick="scrollToSection('advantages')">Advantages</button>
-        <button onclick="scrollToSection('disadvantages')">Disadvantages</button>
-        <button onclick="scrollToSection('examples')">Examples</button>
+        <div class="tabbar">
+            <button onclick="scrollToSection('intro')">Introduction</button>
+            <button onclick="scrollToSection('terms')">Key Terms</button>
+            <button onclick="scrollToSection('operations')">Operations</button>
+            <button onclick="scrollToSection('advantages')">Advantages</button>
+            <button onclick="scrollToSection('disadvantages')">Disadvantages</button>
+            <button onclick="scrollToSection('examples')">Examples</button>
+        </div>
     </nav>
 
     <section id="intro">
@@ -239,13 +293,42 @@
         print(current.data)
         current = current.prev</code></pre>
     </section>
+    </div>
 
     <script>
         function scrollToSection(sectionId) {
             const section = document.getElementById(sectionId);
             section.classList.add('visible');
             section.scrollIntoView({ behavior: 'smooth' });
+            // mark the corresponding tab as active for accessibility
+            document.querySelectorAll('nav button').forEach(btn => btn.setAttribute('aria-pressed', 'false'));
+            const btn = document.querySelector('nav button[onclick*="' + sectionId + '"]');
+            if (btn) btn.setAttribute('aria-pressed', 'true');
         }
+
+        // Setup tabbar active states and keyboard navigation
+        (function() {
+            const buttons = document.querySelectorAll('nav button');
+            buttons.forEach(btn => {
+                btn.setAttribute('aria-pressed', 'false');
+                btn.addEventListener('click', () => {
+                    buttons.forEach(b => b.setAttribute('aria-pressed', 'false'));
+                    btn.setAttribute('aria-pressed', 'true');
+                });
+                btn.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        const idx = Array.from(buttons).indexOf(btn);
+                        const dir = e.key === 'ArrowRight' ? 1 : -1;
+                        const next = buttons[(idx + dir + buttons.length) % buttons.length];
+                        next.focus();
+                    }
+                });
+            });
+            // initial active tab
+            const first = document.querySelector('nav button');
+            if (first) first.setAttribute('aria-pressed', 'true');
+        })();
 
         // Trigger visibility on scroll for animations
         window.addEventListener('scroll', () => {
