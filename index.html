@@ -260,7 +260,9 @@
         <ul>
             <li><strong>Insertion at Beginning:</strong> Create a new node, set its <code>next</code> to head, head's <code>prev</code> to new node, and update head.</li>
             <li><strong>Insertion at End:</strong> Create a new node, set tail's <code>next</code> to new node, new node's <code>prev</code> to tail, and update tail.</li>
-            <li><strong>Deletion:</strong> Adjust <code>prev</code> and <code>next</code> pointers of adjacent nodes and remove the target node.</li>
+            <li><strong>Deletion at Beginning:</strong> Remove the head node, update the head to the next node, and free the removed node.</li>
+            <li><strong>Deletion at End:</strong> Remove the tail node, update the tail to the previous node, and free the removed node.</li>
+            <li><strong>Deletion (by reference):</strong> Adjust <code>prev</code> and <code>next</code> pointers of adjacent nodes and remove the target node.</li>
             <li><strong>Traversal:</strong> Start from head and follow <code>next</code> for forward; from tail and follow <code>prev</code> for backward.</li>
         </ul>
     </section>
@@ -289,50 +291,83 @@
         <h2>Examples</h2>
         <p>Below are Python examples for key operations in a DLL. Assume a Node class with <code>data</code>, <code>next</code>, and <code>prev</code>.</p>
 
-        <h3>Node Class</h3>
-        <pre><code>class Node:
-    def __init__(self, data):
-        self.data = data
-        self.next = None
-        self.prev = None</code></pre>
+        <h3>Node Struct</h3>
+        <pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+typedef struct Node {
+    int data;
+    struct Node *next;
+    struct Node *prev;
+} Node;</code></pre>
 
         <h3>Insertion at Beginning</h3>
-        <pre><code>def insert_at_beginning(head, data):
-    new_node = Node(data)
-    if head:
-        head.prev = new_node
-    new_node.next = head
-    return new_node  # New head</code></pre>
+        <pre><code>Node* insert_at_beginning(Node* head, int data) {
+    Node* new_node = (Node*)malloc(sizeof(Node));
+    new_node->data = data;
+    new_node->prev = NULL;
+    new_node->next = head;
+    if (head) head->prev = new_node;
+    return new_node; /* New head */
+}</code></pre>
 
         <h3>Insertion at End</h3>
-        <pre><code>def insert_at_end(tail, data):
-    new_node = Node(data)
-    if tail:
-        tail.next = new_node
-    new_node.prev = tail
-    return new_node  # New tail</code></pre>
+        <pre><code>Node* insert_at_end(Node* tail, int data) {
+    Node* new_node = (Node*)malloc(sizeof(Node));
+    new_node->data = data;
+    new_node->next = NULL;
+    new_node->prev = tail;
+    if (tail) tail->next = new_node;
+    return new_node; /* New tail */
+}</code></pre>
 
         <h3>Deletion of a Node</h3>
-        <pre><code>def delete_node(node):
-    if node.prev:
-        node.prev.next = node.next
-    if node.next:
-        node.next.prev = node.prev
-    # Node is now isolated</code></pre>
+        <pre><code>void delete_node(Node** head_ref, Node* node) {
+    if (!node) return;
+    if (node->prev)
+        node->prev->next = node->next;
+    else
+        *head_ref = node->next; /* node was head */
+    if (node->next)
+        node->next->prev = node->prev;
+    free(node); /* Node is removed */
+}</code></pre>
+
+        <h3>Deletion at Beginning</h3>
+        <pre><code>Node* delete_at_beginning(Node* head) {
+    if (!head) return NULL;
+    Node* next = head->next;
+    if (next) next->prev = NULL;
+    free(head);
+    return next; /* New head */
+}</code></pre>
+
+        <h3>Deletion at End</h3>
+        <pre><code>Node* delete_at_end(Node* tail) {
+    if (!tail) return NULL;
+    Node* prev = tail->prev;
+    if (prev) prev->next = NULL;
+    free(tail);
+    return prev; /* New tail */
+}</code></pre>
 
         <h3>Forward Traversal</h3>
-        <pre><code>def traverse_forward(head):
-    current = head
-    while current:
-        print(current.data)
-        current = current.next</code></pre>
+        <pre><code>void traverse_forward(Node* head) {
+    Node* current = head;
+    while (current) {
+        printf("%d\n", current->data);
+        current = current->next;
+    }
+}</code></pre>
 
         <h3>Backward Traversal</h3>
-        <pre><code>def traverse_backward(tail):
-    current = tail
-    while current:
-        print(current.data)
-        current = current.prev</code></pre>
+        <pre><code>void traverse_backward(Node* tail) {
+    Node* current = tail;
+    while (current) {
+        printf("%d\n", current->data);
+        current = current->prev;
+    }
+}</code></pre>
     </section>
     </div>
 
